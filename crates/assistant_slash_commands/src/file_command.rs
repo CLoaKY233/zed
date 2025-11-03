@@ -300,12 +300,10 @@ fn collect_files(
                         continue;
                     }
                     if folded_directory_names.is_empty() {
-                        let label = if is_top_level_directory {
-                            is_top_level_directory = false;
-                            path_including_worktree_name.display(path_style).to_string()
-                        } else {
-                            filename
-                        };
+                        let label = path_including_worktree_name.display(path_style).to_string();
+                        if is_top_level_directory{
+                            is_top_level_directory=false;
+                        }
                         events_tx.unbounded_send(Ok(SlashCommandEvent::StartSection {
                             icon: IconName::Folder,
                             label: label.clone().into(),
@@ -334,6 +332,7 @@ fn collect_files(
                             },
                         )))?;
                         directory_stack.push(entry.path.clone());
+                        folded_directory_names = RelPath::empty().into();
                     }
                     events_tx.unbounded_send(Ok(SlashCommandEvent::Content(
                         SlashCommandContent::Text {
