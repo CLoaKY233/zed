@@ -289,8 +289,7 @@ fn collect_files(
                                 folded_directory_names =
                                     folded_directory_names.join(&path_including_worktree_name);
                             } else {
-                                folded_directory_names =
-                                    folded_directory_names.join(RelPath::unix(&filename).unwrap());
+                                folded_directory_names = RelPath::empty().into();
                             }
                             continue;
                         }
@@ -301,8 +300,8 @@ fn collect_files(
                     }
                     if folded_directory_names.is_empty() {
                         let label = path_including_worktree_name.display(path_style).to_string();
-                        if is_top_level_directory{
-                            is_top_level_directory=false;
+                        if is_top_level_directory {
+                            is_top_level_directory = false;
                         }
                         events_tx.unbounded_send(Ok(SlashCommandEvent::StartSection {
                             icon: IconName::Folder,
@@ -482,7 +481,8 @@ mod custom_path_matcher {
                     let sanitized = SanitizedPath::new(glob).to_string();
                     let normalized = sanitized.replace('\\', "/");
                     Glob::new(&normalized)
-                }).collect::<Result<Vec<_>, _>>()?;
+                })
+                .collect::<Result<Vec<_>, _>>()?;
             let sources = globs.iter().map(|glob| glob.glob().to_owned()).collect();
             let sources_with_trailing_slash = globs
                 .iter()
