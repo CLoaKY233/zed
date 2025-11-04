@@ -299,7 +299,11 @@ fn collect_files(
                         continue;
                     }
                     if folded_directory_names.is_empty() {
-                        let label = path_including_worktree_name.display(path_style).to_string();
+                        let label = if is_top_level_directory {
+                            path_including_worktree_name.display(path_style).to_string()
+                        } else {
+                            filename.clone()
+                        };
                         if is_top_level_directory {
                             is_top_level_directory = false;
                         }
@@ -310,7 +314,8 @@ fn collect_files(
                         }))?;
                         events_tx.unbounded_send(Ok(SlashCommandEvent::Content(
                             SlashCommandContent::Text {
-                                text: label.to_string(),
+                                // text: path_including_worktree_name.display(path_style).to_string(),
+                                text: label,
                                 run_commands_in_text: false,
                             },
                         )))?;
