@@ -289,7 +289,8 @@ fn collect_files(
                                 folded_directory_names =
                                     folded_directory_names.join(&path_including_worktree_name);
                             } else {
-                                folded_directory_names = RelPath::empty().into();
+                                folded_directory_names =
+                                    folded_directory_names.join(RelPath::unix(&filename).unwrap());
                             }
                             continue;
                         }
@@ -300,13 +301,11 @@ fn collect_files(
                     }
                     if folded_directory_names.is_empty() {
                         let label = if is_top_level_directory {
+                            is_top_level_directory = false;
                             path_including_worktree_name.display(path_style).to_string()
                         } else {
-                            filename.clone()
+                            filename
                         };
-                        if is_top_level_directory {
-                            is_top_level_directory = false;
-                        }
                         events_tx.unbounded_send(Ok(SlashCommandEvent::StartSection {
                             icon: IconName::Folder,
                             label: label.clone().into(),
@@ -314,7 +313,6 @@ fn collect_files(
                         }))?;
                         events_tx.unbounded_send(Ok(SlashCommandEvent::Content(
                             SlashCommandContent::Text {
-                                // text: path_including_worktree_name.display(path_style).to_string(),
                                 text: label,
                                 run_commands_in_text: false,
                             },
